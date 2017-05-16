@@ -50,6 +50,7 @@ class JsonBehavior extends \yii\base\Behavior
             ActiveRecord::EVENT_AFTER_FIND    => 'decode',
             ActiveRecord::EVENT_BEFORE_INSERT => 'encode',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'encode',
+            GLOBAL_EVENTS['JSON_BEHAVIOR_EVENT_ENCODE'] => 'encode',
             ActiveRecord::EVENT_AFTER_INSERT  => 'decode',
             ActiveRecord::EVENT_AFTER_UPDATE  => 'decode',
         ];
@@ -125,13 +126,14 @@ class JsonBehavior extends \yii\base\Behavior
     }
 
     /**
+     * Encodes all the attributes to the database column $this->json_attribute, regardless of how many JsonBehaviors are set.
      */
     public function encode()
     {
         $attributes = [];
         $objects = [];
         $arrayObjects = [];
-        
+        //get all the previously set json for this->json_attribute.
         $arrJson = ($arr = Json::decode($this->owner->{$this->json_attribute})) ? $arr : [];
 
         foreach ($this->attributes as $attribute => $value) {
@@ -147,6 +149,6 @@ class JsonBehavior extends \yii\base\Behavior
         }
         
         $this->owner->{$this->json_attribute} = Json::encode(array_merge($arrJson,$attributes,$objects,$arrayObjects));
-                
+           
     }
 }
